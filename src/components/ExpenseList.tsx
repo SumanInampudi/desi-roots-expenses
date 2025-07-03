@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Edit, Trash2, Filter, Search, Calendar, Info, Receipt, Eye, X, User } from 'lucide-react'
 import { useExpenses } from '../hooks/useExpenses'
 import { useCategories } from '../hooks/useCategories'
+import { CategoryIcon } from './CategoryIcon'
 import { supabase } from '../lib/supabase'
 
 export const ExpenseList: React.FC = () => {
@@ -42,7 +43,7 @@ export const ExpenseList: React.FC = () => {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -76,7 +77,7 @@ export const ExpenseList: React.FC = () => {
             placeholder="Search expenses..."
             value={filters.search}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
           />
         </div>
         <button
@@ -96,7 +97,7 @@ export const ExpenseList: React.FC = () => {
               <select
                 value={filters.category}
                 onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
                 {categories.map(category => (
@@ -111,7 +112,7 @@ export const ExpenseList: React.FC = () => {
               <select
                 value={filters.month}
                 onChange={(e) => setFilters(prev => ({ ...prev, month: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 <option value="">All Months</option>
                 {months.map(month => (
@@ -126,7 +127,7 @@ export const ExpenseList: React.FC = () => {
               <select
                 value={filters.year}
                 onChange={(e) => setFilters(prev => ({ ...prev, year: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 {years.map(year => (
                   <option key={year} value={year}>
@@ -141,7 +142,7 @@ export const ExpenseList: React.FC = () => {
 
       {loading ? (
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
           <p className="text-gray-500 mt-2">Loading expenses...</p>
         </div>
       ) : (
@@ -159,10 +160,10 @@ export const ExpenseList: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
                         <div
-                          className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-medium"
+                          className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-medium shadow-sm"
                           style={{ backgroundColor: expense.category?.color }}
                         >
-                          ${Math.round(Number(expense.amount))}
+                          <CategoryIcon iconName={expense.category?.icon || 'circle'} className="h-5 w-5" />
                         </div>
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-900">{expense.description}</h3>
@@ -171,7 +172,10 @@ export const ExpenseList: React.FC = () => {
                             {expense.subcategory && (
                               <>
                                 <span>•</span>
-                                <span>{expense.subcategory.name}</span>
+                                <div className="flex items-center space-x-1">
+                                  <CategoryIcon iconName={expense.subcategory.icon || 'circle'} className="h-3 w-3" />
+                                  <span>{expense.subcategory.name}</span>
+                                </div>
                               </>
                             )}
                             {expense.receipt_url && (
@@ -204,7 +208,7 @@ export const ExpenseList: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-gray-900">${Number(expense.amount).toFixed(2)}</p>
+                      <p className="text-lg font-bold text-gray-900">₹{Number(expense.amount).toFixed(2)}</p>
                       <p className="text-sm text-gray-500">{formatDate(expense.date)}</p>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
@@ -244,7 +248,9 @@ export const ExpenseList: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Expense Details</h3>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
+                Expense Details
+              </h3>
               <button
                 onClick={() => setViewExpense(null)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -257,7 +263,7 @@ export const ExpenseList: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                  <p className="text-lg font-bold text-gray-900">${Number(viewExpense.amount).toFixed(2)}</p>
+                  <p className="text-lg font-bold text-gray-900">₹{Number(viewExpense.amount).toFixed(2)}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -275,16 +281,21 @@ export const ExpenseList: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                   <div className="flex items-center space-x-2">
                     <div
-                      className="h-4 w-4 rounded"
+                      className="h-6 w-6 rounded flex items-center justify-center"
                       style={{ backgroundColor: viewExpense.category?.color }}
-                    ></div>
+                    >
+                      <CategoryIcon iconName={viewExpense.category?.icon || 'circle'} className="h-4 w-4 text-white" />
+                    </div>
                     <span className="text-gray-900">{viewExpense.category?.name}</span>
                   </div>
                 </div>
                 {viewExpense.subcategory && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
-                    <p className="text-gray-900">{viewExpense.subcategory.name}</p>
+                    <div className="flex items-center space-x-2">
+                      <CategoryIcon iconName={viewExpense.subcategory.icon || 'circle'} className="h-4 w-4 text-gray-600" />
+                      <span className="text-gray-900">{viewExpense.subcategory.name}</span>
+                    </div>
                   </div>
                 )}
               </div>

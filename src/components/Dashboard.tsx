@@ -2,6 +2,7 @@ import React from 'react'
 import { TrendingUp, TrendingDown, DollarSign, Calendar, PieChart } from 'lucide-react'
 import { useExpenses } from '../hooks/useExpenses'
 import { useCategories } from '../hooks/useCategories'
+import { CategoryIcon } from './CategoryIcon'
 
 export const Dashboard: React.FC = () => {
   const { expenses } = useExpenses()
@@ -38,21 +39,21 @@ export const Dashboard: React.FC = () => {
   const stats = [
     {
       name: 'This Month',
-      value: `$${currentMonthTotal.toFixed(2)}`,
+      value: `₹${currentMonthTotal.toFixed(2)}`,
       change: `${monthlyChange.toFixed(1)}%`,
       changeType: isIncreasing ? 'increase' : 'decrease',
       icon: DollarSign,
     },
     {
       name: 'Last Month',
-      value: `$${lastMonthTotal.toFixed(2)}`,
+      value: `₹${lastMonthTotal.toFixed(2)}`,
       change: `${currentMonthExpenses.length} expenses`,
       changeType: 'neutral',
       icon: Calendar,
     },
     {
       name: 'Total Expenses',
-      value: `$${totalExpenses.toFixed(2)}`,
+      value: `₹${totalExpenses.toFixed(2)}`,
       change: `${expenses.length} total`,
       changeType: 'neutral',
       icon: PieChart,
@@ -69,7 +70,7 @@ export const Dashboard: React.FC = () => {
                 <p className="text-sm font-medium text-gray-600">{stat.name}</p>
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               </div>
-              <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="h-12 w-12 bg-gradient-to-br from-green-600 to-orange-500 rounded-lg flex items-center justify-center">
                 <stat.icon className="h-6 w-6 text-white" />
               </div>
             </div>
@@ -97,13 +98,13 @@ export const Dashboard: React.FC = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Categories This Month</h3>
         <div className="space-y-3">
           {categoryTotals.filter(cat => cat.total > 0).slice(0, 5).map((category, index) => (
-            <div key={category.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div key={category.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               <div className="flex items-center space-x-3">
                 <div 
-                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-medium"
+                  className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-medium shadow-sm"
                   style={{ backgroundColor: category.color }}
                 >
-                  #{index + 1}
+                  <CategoryIcon iconName={category.icon} className="h-5 w-5" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{category.name}</p>
@@ -113,7 +114,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-bold text-gray-900">${category.total.toFixed(2)}</p>
+                <p className="font-bold text-gray-900">₹{category.total.toFixed(2)}</p>
                 <p className="text-sm text-gray-500">
                   {((category.total / currentMonthTotal) * 100).toFixed(1)}%
                 </p>

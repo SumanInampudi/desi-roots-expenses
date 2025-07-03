@@ -4,7 +4,6 @@ import {
   Plus, 
   List, 
   Settings, 
-  Wallet, 
   TrendingUp,
   Menu,
   X,
@@ -36,9 +35,9 @@ function App() {
   // Show loading spinner while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -48,8 +47,8 @@ function App() {
   // Show error if there's an authentication error
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl p-8 max-w-md w-full text-center shadow-lg">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-orange-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl p-8 max-w-md w-full text-center shadow-lg border border-gray-200">
           <div className="text-red-500 mb-4">
             <XCircle className="h-12 w-12 mx-auto" />
           </div>
@@ -57,7 +56,7 @@ function App() {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
           >
             Retry
           </button>
@@ -106,18 +105,30 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-orange-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
-                <Wallet className="h-6 w-6 text-white" />
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-600 to-orange-500 rounded-xl shadow-lg">
+                <img 
+                  src="/api/placeholder/32/32" 
+                  alt="Logo" 
+                  className="h-8 w-8 rounded-lg"
+                  onError={(e) => {
+                    // Fallback to text if image fails to load
+                    e.currentTarget.style.display = 'none'
+                    e.currentTarget.nextElementSibling!.style.display = 'block'
+                  }}
+                />
+                <span className="text-white font-bold text-lg hidden">ET</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">ExpenseTracker</h1>
-                <p className="text-sm text-gray-500">Personal Finance Manager</p>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
+                  ExpenseTracker
+                </h1>
+                <p className="text-sm text-gray-500">Business Finance Manager</p>
               </div>
             </div>
 
@@ -129,7 +140,7 @@ function App() {
                   onClick={() => setActiveTab(item.id as Tab)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === item.id
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-green-600 to-orange-500 text-white shadow-lg'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -149,7 +160,7 @@ function App() {
                 <Users className="h-4 w-4" />
                 <span>{user.full_name || user.email}</span>
                 {user.is_admin && (
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-gradient-to-r from-green-100 to-orange-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium border border-green-200">
                     Admin
                   </span>
                 )}
@@ -159,7 +170,7 @@ function App() {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setShowExpenseForm(true)}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline font-medium">Add Expense</span>
@@ -167,7 +178,7 @@ function App() {
                 
                 <button
                   onClick={() => setShowBulkExpenseForm(true)}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-teal-600 text-white px-3 py-2 rounded-lg hover:from-green-600 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   <PlusSquare className="h-4 w-4" />
                   <span className="hidden sm:inline font-medium">Bulk Add</span>
@@ -203,7 +214,7 @@ function App() {
                 <Users className="h-4 w-4" />
                 <span>{user.full_name || user.email}</span>
                 {user.is_admin && (
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-gradient-to-r from-green-100 to-orange-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium border border-green-200">
                     Admin
                   </span>
                 )}
@@ -219,7 +230,7 @@ function App() {
                   }}
                   className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg transition-all duration-200 ${
                     activeTab === item.id
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                      ? 'bg-gradient-to-r from-green-600 to-orange-500 text-white'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -237,12 +248,12 @@ function App() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
                 {navigation.find(nav => nav.id === activeTab)?.name}
               </h2>
               <p className="text-gray-600 mt-1">
-                {activeTab === 'dashboard' && 'Track your spending and view insights'}
-                {activeTab === 'expenses' && 'Manage and review your expenses'}
+                {activeTab === 'dashboard' && 'Track your business spending and view insights'}
+                {activeTab === 'expenses' && 'Manage and review your business expenses'}
                 {activeTab === 'settings' && 'Configure your preferences'}
               </p>
             </div>
@@ -279,8 +290,8 @@ function App() {
 
       {/* Background Decoration */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200 to-orange-200 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-green-200 rounded-full opacity-20 blur-3xl"></div>
       </div>
     </div>
   )

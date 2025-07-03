@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { LogIn, Wallet, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { LogIn, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
+import { createTestUser } from '../lib/supabase'
 
 export const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ export const LoginPage: React.FC = () => {
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [creatingTestUser, setCreatingTestUser] = useState(false)
   const { signIn, loading, error } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,23 +21,51 @@ export const LoginPage: React.FC = () => {
     }
   }
 
+  const handleCreateTestUser = async () => {
+    setCreatingTestUser(true)
+    try {
+      await createTestUser()
+      // Auto-fill the form with test credentials
+      setFormData({
+        email: 'test@gmail.com',
+        password: 'password'
+      })
+    } catch (error) {
+      console.error('Error creating test user:', error)
+    } finally {
+      setCreatingTestUser(false)
+    }
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-orange-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
-              <Wallet className="h-8 w-8 text-white" />
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-600 to-orange-500 rounded-2xl shadow-lg">
+              <img 
+                src="/api/placeholder/32/32" 
+                alt="Logo" 
+                className="h-10 w-10 rounded-xl"
+                onError={(e) => {
+                  // Fallback to text if image fails to load
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.nextElementSibling!.style.display = 'block'
+                }}
+              />
+              <span className="text-white font-bold text-xl hidden">ET</span>
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">ExpenseTracker</h1>
-          <p className="text-gray-600">Sign in to manage your expenses</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent mb-2">
+            ExpenseTracker
+          </h1>
+          <p className="text-gray-600">Sign in to manage your business expenses</p>
         </div>
 
         {/* Login Form */}
@@ -57,7 +87,7 @@ export const LoginPage: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 placeholder="Enter your email"
                 required
               />
@@ -73,7 +103,7 @@ export const LoginPage: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   placeholder="Enter your password"
                   required
                 />
@@ -90,7 +120,7 @@ export const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-green-600 to-orange-500 text-white py-3 px-4 rounded-lg hover:from-green-700 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -104,8 +134,19 @@ export const LoginPage: React.FC = () => {
           </form>
 
           <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-center text-sm text-gray-500">
-              Admin access required to use this application
+            <button
+              onClick={handleCreateTestUser}
+              disabled={creatingTestUser}
+              className="w-full flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {creatingTestUser ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+              ) : (
+                <span className="text-sm">Create Test User (test@gmail.com)</span>
+              )}
+            </button>
+            <p className="text-center text-xs text-gray-500 mt-2">
+              For testing purposes only
             </p>
           </div>
         </div>
@@ -113,15 +154,15 @@ export const LoginPage: React.FC = () => {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-sm text-gray-500">
-            Secure expense management for your business
+            Secure business expense management
           </p>
         </div>
       </div>
 
       {/* Background Decoration */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200 to-orange-200 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-green-200 rounded-full opacity-20 blur-3xl"></div>
       </div>
     </div>
   )
