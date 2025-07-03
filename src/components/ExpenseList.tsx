@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Edit, Trash2, Filter, Search, Calendar, Info, Receipt, Eye, X } from 'lucide-react'
+import { Edit, Trash2, Filter, Search, Calendar, Info, Receipt, Eye, X, User } from 'lucide-react'
 import { useExpenses } from '../hooks/useExpenses'
 import { useCategories } from '../hooks/useCategories'
 import { supabase } from '../lib/supabase'
@@ -14,6 +14,7 @@ export const ExpenseList: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [viewReceipt, setViewReceipt] = useState<string | null>(null)
+  const [viewExpense, setViewExpense] = useState<any>(null)
 
   const { expenses, loading, refetch } = useExpenses(filters)
   const { categories } = useCategories()
@@ -191,6 +192,14 @@ export const ExpenseList: React.FC = () => {
                               </span>
                             </div>
                           )}
+                          {expense.created_by_name && (
+                            <div className="flex items-center space-x-1 mt-1">
+                              <User className="h-3 w-3 text-purple-500" />
+                              <span className="text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded">
+                                Created by: {expense.created_by_name}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -199,13 +208,20 @@ export const ExpenseList: React.FC = () => {
                       <p className="text-sm text-gray-500">{formatDate(expense.date)}</p>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
+                      <button
+                        onClick={() => setViewExpense(expense)}
+                        className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="View details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
                       {expense.receipt_url && (
                         <button
                           onClick={() => setViewReceipt(expense.receipt_url)}
-                          className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors"
                           title="View receipt"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Receipt className="h-4 w-4" />
                         </button>
                       )}
                       <button
@@ -223,10 +239,92 @@ export const ExpenseList: React.FC = () => {
         </div>
       )}
 
+      {/* Expense Details Modal */}
+      {viewExpense && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Expense Details</h3>
+              <button
+                onClick={() => setViewExpense(null)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                  <p className="text-lg font-bold text-gray-900">${Number(viewExpense.amount).toFixed(2)}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <p className="text-gray-900">{formatDate(viewExpense.date)}</p>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <p className="text-gray-900">{viewExpense.description}</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className="h-4 w-4 rounded"
+                      style={{ backgroundColor: viewExpense.category?.color }}
+                    ></div>
+                    <span className="text-gray-900">{viewExpense.category?.name}</span>
+                  </div>
+                </div>
+                {viewExpense.subcategory && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
+                    <p className="text-gray-900">{viewExpense.subcategory.name}</p>
+                  </div>
+                )}
+              </div>
+              
+              {viewExpense.expense_details && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Additional Details</label>
+                  <p className="text-gray-900">{viewExpense.expense_details}</p>
+                </div>
+              )}
+              
+              {viewExpense.created_by_name && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Created By</label>
+                  <p className="text-gray-900">{viewExpense.created_by_name}</p>
+                </div>
+              )}
+              
+              {viewExpense.receipt_url && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Receipt</label>
+                  <div className="border border-gray-300 rounded-lg p-2">
+                    <img
+                      src={viewExpense.receipt_url}
+                      alt="Receipt"
+                      className="w-full h-48 object-cover rounded cursor-pointer"
+                      onClick={() => setViewReceipt(viewExpense.receipt_url)}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Receipt Viewer Modal */}
       {viewReceipt && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl p-4 max-w-2xl max-h-[90vh] overflow-auto">
+          <div className="bg-white rounded-xl p-4 max-w-4xl max-h-[90vh] overflow-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900">Receipt</h3>
               <button

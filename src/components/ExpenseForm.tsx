@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Plus, X, Upload, Image, Trash2 } from 'lucide-react'
 import { supabase, uploadReceipt } from '../lib/supabase'
 import { useCategories } from '../hooks/useCategories'
+import { useAuth } from '../hooks/useAuth'
 
 interface ExpenseFormProps {
   onClose: () => void
@@ -10,6 +11,7 @@ interface ExpenseFormProps {
 
 export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onClose, onSuccess }) => {
   const { categories, subcategories } = useCategories()
+  const { user } = useAuth()
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
@@ -70,6 +72,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onClose, onSuccess }) 
       return
     }
 
+    if (!user) {
+      setError('User not authenticated')
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -84,7 +91,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onClose, onSuccess }) 
           subcategory_id: formData.subcategory_id || null,
           expense_details: formData.expense_details || null,
           date: formData.date,
-          receipt_url: null // Will be updated if receipt is uploaded
+          receipt_url: null,
+          created_by: user.id,
+          created_by_name: user.full_name || user.email
         }])
         .select()
         .single()

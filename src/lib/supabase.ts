@@ -3,7 +3,13 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables')
+  console.log('VITE_SUPABASE_URL:', supabaseUrl ? 'Set' : 'Missing')
+  console.log('VITE_SUPABASE_ANON_KEY:', supabaseKey ? 'Set' : 'Missing')
+}
+
+export const supabase = createClient(supabaseUrl || '', supabaseKey || '')
 
 export type Category = {
   id: string
@@ -31,6 +37,8 @@ export type Expense = {
   date: string
   created_at: string
   updated_at: string
+  created_by?: string
+  created_by_name?: string
 }
 
 export type ExpenseWithCategory = Expense & {
@@ -43,7 +51,7 @@ export const uploadReceipt = async (file: File, expenseId: string): Promise<stri
   try {
     const fileExt = file.name.split('.').pop()
     const fileName = `${expenseId}-${Date.now()}.${fileExt}`
-    const filePath = fileName // Fixed: removed redundant 'receipts/' prefix
+    const filePath = fileName
 
     const { error: uploadError } = await supabase.storage
       .from('receipts')
